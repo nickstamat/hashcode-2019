@@ -17,6 +17,7 @@ class HashCode
     write_output
   end
 
+  # GOOD
   def parse_input
     File.readlines(@in_file).each_with_index do |line, idx|
       if idx == 0
@@ -106,13 +107,10 @@ class HashCode
 
   # GOOD
   def get_score_between(slide1, slide2)
-    common = slide1[:tags] & slide2[:tags]
-    common_len = common.count
-    excl1 = slide1[:tags] - slide2[:tags]
-    excl2 = slide2[:tags] - slide1[:tags]
-    ex1_len = excl1.count
-    ex2_len = excl2.count
+    num_common = (slide1[:tags] & slide2[:tags]).count
+    num_excl1 = (slide1[:tags] - slide2[:tags]).count
+    num_excl2 = (slide2[:tags] - slide1[:tags]).count
 
-    [common_len, ex1_len, ex2_len].min
+    [num_common, num_excl1, num_excl2].min
   end
 end
