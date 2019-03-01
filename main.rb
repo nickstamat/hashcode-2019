@@ -14,7 +14,7 @@ class HashCode
     create_tags_map
     solve
     score_output
-    # write_output
+    write_output
   end
 
   def parse_input
@@ -96,10 +96,10 @@ class HashCode
 
   # GOOD
   def write_output
-    File.open("#{@in_file}.out", 'w') do |f|
+    File.open(@out_file, 'w') do |f|
       f << "#{@slides.count}\n"
-      @slides.each do |s|
-        f.puts "#{s[:id]}\n"
+      @slides.each do |slide|
+        f.puts "#{slide[:id]}\n"
       end
     end
   end
