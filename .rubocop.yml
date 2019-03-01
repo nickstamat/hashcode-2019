@@ -1,0 +1,8 @@
+require:
+  - rubocop-airbnb
+
+Metrics/LineLength:
+  Max: 120
+
+Style/SpecialGlobalVars:
+  Enabled: false
