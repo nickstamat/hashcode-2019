@@ -36,12 +36,13 @@ class HashCode
     puts "Validating result..."
     slides_unique = @slides.uniq
     is_invalid = (@slides.length != slides_unique.length) || (@slides & slides_unique != @slides)
+
     if is_invalid
       puts "INVALID: Result contains duplicates."
       exit
     end
 
-    puts "Calculating score..."
+    puts "Result is VALID! Calculating score..."
     score = 0
 
     for idx in 1..@slides.count - 1
