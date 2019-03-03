@@ -7,6 +7,7 @@ class HashCode
     @out_file = File.join(Dir.pwd, 'out', "#{in_file.sub('.txt', '.out')}")
     @images = []
     @slides = []
+    @used_map = []
     @tags = {}
   end
 
@@ -29,20 +30,21 @@ class HashCode
       image = line.strip.split
       @images << { id: idx - 1, orientation: image.first, tags: image.drop(2) }
     end
+    @used_map = Array.new(@num_images) { |i| false }
   end
 
   # GOOD
   def score_output
-    puts "Validating result..."
+    puts("Validating result...")
     slides_unique = @slides.uniq
     is_invalid = (@slides.length != slides_unique.length) || (@slides & slides_unique != @slides)
 
     if is_invalid
-      puts "INVALID: Result contains duplicates."
+      puts("INVALID: Result contains duplicates.")
       exit
     end
 
-    puts "Result is VALID! Calculating score..."
+    puts("Result is VALID! Calculating score...")
     score = 0
 
     for idx in 1..@slides.count - 1
@@ -55,41 +57,37 @@ class HashCode
   end
 
   def solve
-    puts "Solving..."
+    puts("Solving...")
 
     # start with the first image
     @slides << @images[0]
-    used_ids = [0]
-    used_hash = Array.new(@num_images) { |i| false }
-    used_hash[0] = true
+    @used_map[0] = true
 
     for i in 0..@num_images - 2
       # just a progress indicator to see where we are at
-      if i % 1000 == 0
-        puts i
-      end
+      i % 1000 == 0 && puts(i)
 
-      golden_tag = @slides[i][:tags].detect do |tag|
-        (@tags[tag] - (used_ids | Array(@slides[i][:id]))).count >= 1
-      end
-
-      found_id = nil
-
-      if golden_tag
-        found_id = @tags[golden_tag].detect { |id| id != @slides[i][:id] && used_hash[id] == false }
-      else
-        found_id = used_hash.find_index(false)
-      end
+      found_id = maybe_get_next_id(i)
+      found_id ||= @used_map.find_index(false)
 
       @slides << @images[found_id]
-      used_ids << found_id
-      used_hash[found_id] = true
+      @used_map[found_id] = true
     end
+  end
+
+  def maybe_get_next_id(i)
+    @slides[i][:tags].each do |tag|
+      found_id = @tags[tag].detect { |id| id != @slides[i][:id] && @used_map[id] == false }
+      if found_id
+        return found_id
+      end
+    end
+    nil
   end
 
   # GOOD
   def create_tags_map
-    puts "Creating tag map..."
+    puts("Creating tag map...")
     @images.each_with_index do |image, id|
       image[:tags].each do |tag|
         if @tags.key?(tag)
@@ -120,11 +118,11 @@ class HashCode
 
   # GOOD
   def write_output
-    puts "Writing to file..."
+    puts("Writing to file...")
     File.open(@out_file, 'w') do |f|
       f << "#{@slides.count}\n"
       @slides.each do |slide|
-        f.puts "#{slide[:id]}\n"
+        f.puts("#{slide[:id]}\n")
       end
     end
   end
